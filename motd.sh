@@ -1,5 +1,6 @@
 
 # copycat from https://oitibs.com/debian-jessie-dynamic-motd/
+# more copycat from https://nickcharlton.net/posts/debian-ubuntu-dynamic-motd.html
 # install figlet to enable ASCII art
 sudo apt-get install figlet
 # create directory
