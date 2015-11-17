@@ -1,1 +1,3 @@
 ## Linux Bootstrap 
+
+* this set of scripts is for debian/ubuntu based machines...
