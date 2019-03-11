@@ -36,4 +36,7 @@ chmod 644 /etc/update-motd.d/50-motd-news
 chmod 644 /etc/update-motd.d/80-esm
 chmod 644 /etc/update-motd.d/80-livepatch
 chmod 644 /etc/update-motd.d/95-hwe-eol
+
+echo tput setaf 2\;figlet \$HOSTNAME > /etc/update-motd.d/05-hostname
+chmod 755 /etc/update-motd.d/05-hostname
 ``` 
