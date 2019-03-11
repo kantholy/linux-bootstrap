@@ -17,7 +17,7 @@ sudo add-apt-repository universe
 
 ## Ubuntu 18.04 MAC DHCP Reservation:
 
-add `dhcp-identifier: mac` after `dhcp4`
+add `dhcp-identifier: mac` after `dhcp4` in `/etc/netplan/xxx.yaml (cloud-init)`
 ```
 network:
     renderer: networkd
