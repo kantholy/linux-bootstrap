@@ -41,3 +41,12 @@ echo \#\!/bin/sh > /etc/update-motd.d/05-hostname
 echo figlet $(hostname) >> /etc/update-motd.d/05-hostname
 chmod 755 /etc/update-motd.d/05-hostname
 ``` 
+
+## Install SNMPD
+```
+apt-get update
+apt-get install snmpd
+```
+* don't forget to configure snmpd: `vim /etc/snmp/snmpd.conf`
+* set `rocommunity public 10.0.0.0` (public = user, 10.0.0.0 = snmpd poller ip)
+* set `sysLocation` and `sysContact`
