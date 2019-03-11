@@ -27,3 +27,13 @@ network:
             dhcp4: true
             dhcp-identifier: mac
 ```
+
+## Ubuntu strip motd
+
+```
+chmod 644 /etc/update-motd.d/10-help-text
+chmod 644 /etc/update-motd.d/50-motd-news
+chmod 644 /etc/update-motd.d/80-esm
+chmod 644 /etc/update-motd.d/80-livepatch
+chmod 644 /etc/update-motd.d/95-hwe-eol
+``` 
