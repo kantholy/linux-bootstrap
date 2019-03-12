@@ -28,6 +28,22 @@ network:
             dhcp-identifier: mac
 ```
 
+## Ubuntu 18.04 disable ipv6
+```
+echo net.ipv6.conf.all.disable_ipv6 = 1 > /etc/sysctl.d/20-disable-ipv6.conf
+echo net.ipv6.conf.default.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
+echo net.ipv6.conf.lo.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
+
+# reload the values
+sysctl --system
+
+# verify if ipv6 is disable: output should be empty
+ip addr show | grep inet6
+
+```
+* Bug in Ubuntu 18.04: values are not set after reboot!
+* add `@reboot sleep 10 && sysctl --system` to the cronjob: `crontab -e` (as root)
+
 ## Ubuntu strip motd
 
 ```
