@@ -74,3 +74,13 @@ apt-get install snmpd
 * set `agentAddress udp:161` (to listen at all interfaces)
 * set `rocommunity public 10.0.0.0` (public = user, 10.0.0.0 = snmpd poller ip)
 * set `sysLocation` and `sysContact`
+
+## Setup NTP
+```
+timedatectl set-ntp no
+apt-get install ntp
+#show peers:
+ntpq -p
+```
+* edit peer list (add custom ntp server): `vim /etc/ntp.conf`:
+* add `pool ntp.contoso.com` before default pools (feel free to remove/comment out defaults)
