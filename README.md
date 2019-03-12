@@ -44,6 +44,13 @@ ip addr show | grep inet6
 * Bug in Ubuntu 18.04: values are not set after reboot!
 * add `@reboot sleep 10 && sysctl --system` to the cronjob: `crontab -e` (as root)
 
+## Ubuntu remove cloud-init
+```
+echo 'datasource_list: [ None ]' | sudo -s tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg
+sudo apt-get purge cloud-init
+sudo rm -rf /etc/cloud/; sudo rm -rf /var/lib/cloud/
+```
+
 ## Ubuntu strip motd
 
 ```
