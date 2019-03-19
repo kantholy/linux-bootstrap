@@ -1,0 +1,41 @@
+#!/bin/sh
+ 
+upSeconds="$(/usr/bin/cut -d. -f1 /proc/uptime)"
+secs=$((${upSeconds}%60))
+mins=$((${upSeconds}/60%60))
+hours=$((${upSeconds}/3600%24))
+days=$((${upSeconds}/86400))
+uptime=`printf "%d days, %d hours, %d min, %02d sec" "$days" "$hours" "$mins" "$secs"`
+ 
+#--- [ MEMORY ] -----------------------
+mem_total=`cat /proc/meminfo | grep -i MemTotal | awk '{printf "%d",$2/1024;}'`
+mem_free=`cat /proc/meminfo | grep -i MemFree | awk '{printf "%d",$2/1024;}'`
+mem_used=`echo ${mem_total} ${mem_free} | awk '{printf "%d",$1-$2;}'`
+mem=`printf "%4d MB total / %4d MB in use / %d MB free" "$mem_total" "$mem_used" "$mem_free"`
+
+#---[ SWAP ] ----------------------------
+swap_total=`cat /proc/meminfo | grep -i SwapTotal | awk '{printf "%d",$2/1024;}'`
+swap_free=`cat /proc/meminfo | grep -i SwapFree | awk '{printf "%d",$2/1024;}'`
+swap_used=`echo ${swap_total} ${swap_free} | awk '{printf "%d",$1-$2;}'`
+swap=`printf "%4d MB total / %4d MB in use / %d MB free" "$swap_total" "$swap_used" "$swap_free"`
+
+#---[ HD ] ----------------------------
+sua=`grep 'nodev' '/proc/filesystems' | sed -e 's/nodev\t/-x /' | xargs df --local --total | tail -n 1`
+disk_size=`echo $sua | awk '{printf "%d",$2/1048576;}'`;
+disk_used=`echo $sua | awk '{printf "%d",$3/1048576;}'`;
+disk_free=`echo $sua | awk '{printf "%d",$4/1048576;}'`;
+disk=`printf "%4d GB total / %4d GB in use / %d GB free" "$disk_size" "$disk_used" "$disk_free"`
+
+# get the load averages
+read one five fifteen rest < /proc/loadavg
+
+#   CPU         :`cat /proc/cpuinfo | grep "model name" | head -1 | uniq | cut -d: -f2`
+echo "
+  Uptime    : ${uptime}
+  CPU       : ${one}, ${five}, ${fifteen}
+  RAM       : ${mem}
+  Swap      : ${swap}
+  HDD       : ${disk}
+  Processes : `ps ax | wc -l | tr -d " "`
+  IP Adress : `ip a | grep glo | awk '{print $2}' | head -1 | cut -f1 -d/`
+"
