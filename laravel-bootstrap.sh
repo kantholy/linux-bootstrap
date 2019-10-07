@@ -25,5 +25,14 @@ sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/r
 sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password root"
 sudo DEBIAN_FRONTEND=noninteractive apt-get -y install mysql-server
 
+
+
 # laravel vhosts
-mkdir /www
+sudo adduser $USER www-data
+
+sudo mkdir /www
+sudo chown www-data:www-data /www
+sudo chmod 775 /www
+
+
+
