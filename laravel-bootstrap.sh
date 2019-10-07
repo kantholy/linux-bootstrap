@@ -11,7 +11,7 @@ sudo apt install -y php7.3-fpm php7.3-bcmath php7.3-cli php7.3-curl php7.3-json 
 sudo sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 256M/g' /etc/php/7.3/fpm/php.ini
 
 # more tools
-sudo apt install -y unzip git nginx mysql-server
+sudo apt install -y unzip git nginx
 
 # composer
 curl -sS https://getcomposer.org/installer | php
