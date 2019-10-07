@@ -17,6 +17,10 @@ sudo apt install -y unzip git nginx
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 
+
+# laravel installer
+composer global require laravel/installer
+
 # add composer to $PATH
 echo 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"' >> ~/.bashrc
 
