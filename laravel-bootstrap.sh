@@ -34,5 +34,7 @@ sudo mkdir /www
 sudo chown www-data:www-data /www
 sudo chmod 775 /www
 
+cd /www
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/setup-nginx.php
 
 
