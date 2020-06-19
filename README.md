@@ -102,6 +102,9 @@ sudo apt install -y git
 # nginx
 sudo apt install -y nginx
 
+# aktuellen User in die www-data Gruppe mit aufnehmen
+sudo usermod -a -G www-data $USER
+
 # PHP
 sudo apt install software-properties-common
 sudo add-apt-repository ppa:ondrej/php
