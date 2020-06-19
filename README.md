@@ -96,8 +96,8 @@ ntpq -p
 
 ## Setup Web Stack
 ```bash
-# GIT
-sudo apt install -y git
+# essentials
+sudo apt install -y git unzip
 
 # nginx
 sudo apt install -y nginx
