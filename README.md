@@ -102,9 +102,6 @@ sudo apt install -y git
 # nginx
 sudo apt install -y nginx
 
-# aktuellen User in die www-data Gruppe mit aufnehmen
-sudo usermod -a -G www-data $USER
-
 # PHP
 sudo apt install software-properties-common
 sudo add-apt-repository ppa:ondrej/php
@@ -122,4 +119,12 @@ composer --version
 # MariaDB
 sudo apt install mariadb-server
 sudo mysql_secure_installation
+```
+
+## Laravel Berechtigungen anpassen
+```bash
+# aktuellen User in die www-data Gruppe mit aufnehmen
+sudo usermod -a -G www-data $USER
+# Berechtigungen auf dem Laravel Projektverzeichnis anpassen
+sudo chown -R $USER:www-data /www/XXX
 ```
