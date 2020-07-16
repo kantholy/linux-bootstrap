@@ -1,10 +1,10 @@
 #!/bin/sh
 #
 #    00-header - create the header of the MOTD
-#    Copyright (c) 2013 Nick Charlton
+#    Copyright (c) 2020 Tobias Duethorn
 #    Copyright (c) 2009-2010 Canonical Ltd.
 #
-#    Authors: Nick Charlton <hello@nickcharlton.net>
+#    Authors: Tobias Duethorn <tobias@duethorn.cc>
 #             Dustin Kirkland <kirkland@canonical.com>
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,7 @@ if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
         DISTRIB_DESCRIPTION=$(lsb_release -s -d)
 fi
 
-figlet $(hostname)
+printf "Welcome to %s (%s %s %s)\n" "$DISTRIB_DESCRIPTION" "$(uname -o)" "$(uname -r)" "$(uname -m)"
 printf "\n"
-
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "$(uname -r)"
+figlet $(hostname)
 printf "\n"
