@@ -35,7 +35,7 @@ network:
 ```
 
 ## Disable ipv6
-```
+```bash
 sudo echo net.ipv6.conf.all.disable_ipv6 = 1 > /etc/sysctl.d/20-disable-ipv6.conf
 sudo echo net.ipv6.conf.default.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
 sudo echo net.ipv6.conf.lo.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
@@ -51,7 +51,7 @@ sudo ip addr show | grep inet6
 * add `@reboot sleep 10 && sysctl --system` to the cronjob: `crontab -e` (as root)
 
 ## Ubuntu remove cloud-init
-```
+```bash
 echo 'datasource_list: [ None ]' | sudo -s tee /etc/cloud/cloud.cfg.d/90_dpkg.cfg
 sudo apt-get purge cloud-init
 sudo rm -rf /etc/cloud/; sudo rm -rf /var/lib/cloud/
@@ -62,7 +62,7 @@ sudo systemctl disable open-iscsi.service
 
 ## Ubuntu strip motd
 
-```
+```bash
 sudo chmod 644 /etc/update-motd.d/10-help-text
 sudo chmod 644 /etc/update-motd.d/50-motd-news
 sudo chmod 644 /etc/update-motd.d/80-esm
@@ -77,7 +77,7 @@ sudo chmod 755 /etc/update-motd.d/05-hostname
 ``` 
 
 ## Install SNMPD
-```
+```bash
 sudo apt-get update
 sudo apt-get install snmpd
 ```
@@ -87,7 +87,7 @@ sudo apt-get install snmpd
 * set `sysLocation` and `sysContact`
 
 ## Setup Time
-```
+```bash
 sudo timedatectl set-ntp 1
 sudo timedatectl set-timezone Europe/Berlin
 sudo systemctl restart systemd-timesyncd
