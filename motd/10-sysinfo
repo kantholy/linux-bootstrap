@@ -23,6 +23,7 @@
 date=`date`
 load=`cat /proc/loadavg | awk '{print $1}'`
 root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
+root_size=`df -h / | awk '/\// {print $(NF-4)}'`
 memory_usage=`free -m | awk '/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
 swap_usage=`free -m | awk '/Swap/ { printf("%3.1f%%", "exit !$2;$3/$2*100") }'`
 users=`users | wc -w`
@@ -32,8 +33,8 @@ ip=`hostname -i`
 
 echo "System information as of: $date"
 echo
-printf "System load:\t%s\tIP Address:\t%s\n" $load $ip
-printf "Memory usage:\t%s\tSystem uptime:\t%s\n" $memory_usage "$time"
-printf "Usage on /:\t%s\tSwap usage:\t%s\n" $root_usage $swap_usage
-printf "Local Users:\t%s\tProcesses:\t%s\n" $users $processes
+printf "System load  :  %-10s      IP Address  :  %s\n" $load $ip
+printf "Usage on /   :  %4s of %-6s  Uptime      :  %s\n" $root_usage $root_size "$time"
+printf "Memory usage :  %-10s      Local Users :  %s\n" $memory_usage $users
+printf "Swap usage   :  %4s            Processes   :  %s\n" $swap_usage $processes
 echo
