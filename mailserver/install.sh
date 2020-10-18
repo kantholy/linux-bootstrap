@@ -15,6 +15,10 @@ function pause(){
    read -p "$*"
 }
 
+function log() {
+   echo `date '+%Y-%m-%d %H:%M:%S'` " INFO:" $1
+}
+
 
 echo -n "ENTER DOMAIN NAME (domain.tld): "
 read domain
@@ -31,13 +35,22 @@ read postmaster_password
 echo -n "ENTER rpamd Password: "
 read rspamd_password
 
+
 # -----------------------------------------------------------------------------
 # :: LETS START ::
+
+echo "--------------------------------------
+  Domain              : $domain
+  Server Hostname     : $hostname
+  vmail Password      : $vmail_password
+  Postmaster Password : $postmaster_password
+  rspamd Password     : $rspamd_password
+--------------------------------------"
 
 pause 'Press [Enter] key to continue...'
 
 
-hostnamectl set-hostname --static mail
+hostnamectl set-hostname --static $hostname
 echo $hostname > /etc/mailname
 
 apt -yq update
@@ -55,19 +68,31 @@ echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 
 log "installing nginx..."
 apt -yq install nginx wget
+
+mkdir /var/www/mail && cd $_
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/mail/index.html
+mkdir mail && cd $_
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/mail/mail/config-v1.1.xml
+
+
 cd /etc/nginx/sites-available/
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/nginx/sites-available/setup
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/sites-available/setup
 mv setup mail
+
+
+sed -i "s/domain.tld/$domain/g" mail
 
 ln -s /etc/nginx/sites-available/mail /etc/nginx/sites-enabled/mail
 
+service nginx reload
 
 # -----------------------------------------------------------------------------
 # https://thomas-leister.de/mailserver-debian-buster/#beantragung-der-tls-zertifikate-via-let-s-encrypt
 
 log "installing acme.sh..."
 cd ~
+apt -yq install curl
 curl https://get.acme.sh | sh
 source ~/.profile
 
@@ -78,7 +103,6 @@ acme.sh --issue --nginx -d mail.$domain -d imap.$domain -d smtp.$domain -d autoc
 mkdir -p /etc/acme.sh/mail.$domain
 
 
-mkdir -p /etc/acme.sh/mail.$domain
 acme.sh --install-cert -d mail.$domain \
     --key-file       /etc/acme.sh/mail.$domain/privkey.pem  \
     --fullchain-file /etc/acme.sh/mail.$domain/fullchain.pem \
@@ -93,6 +117,9 @@ acme.sh --install-cert -d mail.$domain \
 log "installing MariaDB"
 apt -yq install mariadb-server
 
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/database.sql
+mysql < database.sql
+rm database.sql
 mysql -e "grant select on vmail.* to 'vmail'@'localhost' identified by '$vmail_password';"
 
 
@@ -119,20 +146,21 @@ systemctl stop dovecot
 rm -r /etc/dovecot/*
 cd /etc/dovecot
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/dovecot/dovecot.conf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/dovecot/dovecot-sql.conf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot.conf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot-sql.conf
+
+sed -i "s/domain.tld/$domain/g" dovecot.conf
 
 chmod 440 dovecot-sql.conf
 
 cd /var/vmail/sieve/global
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/dovecot/sieve/global/learn-ham.sieve
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/dovecot/sieve/global/learn-spam.sieve
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/dovecot/sieve/global/spam-global.sieve
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-ham.sieve
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-spam.sieve
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/spam-global.sieve
 
 
 log "generating Diffie-Hellmann Parameter - this could take a while!"
-apt -yq install havaged
 openssl dhparam -out /etc/dovecot/dh4096.pem 4096 
 
 # -----------------------------------------------
@@ -144,23 +172,26 @@ systemctl stop postfix
 
 cd /etc/postfix
 rm -r sasl
+mv main.cf main.cf.bak
 rm master.cf main.cf.proto master.cf.proto
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/main.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/master.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/submission_header_cleanup
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/main.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/master.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/submission_header_cleanup
 
 openssl dhparam -out /etc/postfix/dh2048.pem 2048
 
+sed -i "s/domain.tld/$domain/g" main.cf
 
 mkdir /etc/postfix/sql
+cd /etc/postfix/sql
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/accounts.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/aliases.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/domains.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/recipient-access.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/sender-login-maps.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/postfix/sql/tls-policy.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/accounts.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/aliases.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/domains.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/recipient-access.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/sender-login-maps.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/tls-policy.cf
 
 chown -R root:postfix /etc/postfix/sql
 chmod g+x /etc/postfix/sql
@@ -179,20 +210,24 @@ newaliases
 
 log "installing rpamd..."
 
-apt -yq install lsb-release wget
+apt -yq install lsb-release wget gnupg2
+
+apt-get install -y lsb-release wget # optional
+CODENAME=`lsb_release -c -s`
 wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add -
-echo "deb http://rspamd.com/apt-stable/ $(lsb_release -c -s) main" > /etc/apt/sources.list.d/rspamd.list
-echo "deb-src http://rspamd.com/apt-stable/ $(lsb_release -c -s) main" >> /etc/apt/sources.list.d/rspamd.list
+echo "deb [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list
+echo "deb-src [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" >> /etc/apt/sources.list.d/rspamd.list
+apt-get update
+apt-get -yq --no-install-recommends install rspamd
 
 
-apt update
-apt install rspamd redis-server
+apt -yq install redis-server
 systemctl stop rspamd
 
-touch /etc/rpsamd/local.d/whitelist_ip.map
-touch /etc/rpsamd/local.d/whitelist_from.map
-touch /etc/rpsamd/local.d/blacklist_ip.map
-touch /etc/rpsamd/local.d/blacklist_from.map
+touch /etc/rspamd/local.d/whitelist_ip.map
+touch /etc/rspamd/local.d/whitelist_from.map
+touch /etc/rspamd/local.d/blacklist_ip.map
+touch /etc/rspamd/local.d/blacklist_from.map
 
 mkdir /var/lib/rspamd/dkim/
 rspamadm dkim_keygen -b 2048 -s 2020 -k /var/lib/rspamd/dkim/2020.key > /var/lib/rspamd/dkim/2020.txt
@@ -207,12 +242,12 @@ cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 
 # :: setup initial domain and user ::
 
-mysql -u vmail -p$db_pass -e "insert into vmail.domains (domain) values ('$domain');"
+mysql -e "insert into vmail.domains (domain) values ('$domain');"
 
 hash=`openssl passwd -6 $postmaster_password`
 hash="{SHA512-CRYPT}$hash"
 
-mysql -u vmail -p$db_pass -e "insert into vmail.accounts (username, domain, password, quota, enabled, sendonly) values ('postmaster', '$domain', '$hash', 2048, true, false);"
+mysql -e "insert into vmail.accounts (username, domain, password, quota, enabled, sendonly) values ('postmaster', '$domain', '$hash', 2048, true, false);"
 
 # -----------------------------------------------
 # :: start all the things ::

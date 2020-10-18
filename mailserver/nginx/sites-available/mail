@@ -6,7 +6,7 @@ server {
 
     root /var/www/mail;
 
-    index index.html 
+    index index.html;
 
     ssl_certificate /etc/acme.sh/mail.domain.tld/fullchain.pem;
     ssl_certificate_key /etc/acme.sh/mail.domain.tld/privkey.pem;
