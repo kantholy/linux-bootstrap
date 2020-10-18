@@ -1,0 +1,27 @@
+server {
+    listen 80;
+    listen 443 ssl http2;
+
+    server_name autoconfig.domain.tld mail.domain.tld imap.domain.tld smtp.domain.tld;
+
+    root /var/www/mail;
+
+    index index.html 
+
+    ssl_certificate /etc/acme.sh/mail.domain.tld/fullchain.pem;
+    ssl_certificate_key /etc/acme.sh/mail.domain.tld/privkey.pem;
+
+    add_header Strict-Transport-Security max-age=15768000;
+
+    location /rspamd/ {
+        proxy_pass http://localhost:11334/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    if ($ssl_protocol = "") {
+        return 301 https://$server_name$request_uri;
+    }
+}
+
+

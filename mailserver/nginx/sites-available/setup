@@ -1,0 +1,10 @@
+server {
+    listen 80;
+    listen 443 ssl http2;
+
+    server_name autoconfig.domain.tld mail.domain.tld imap.domain.tld smtp.domain.tld;
+
+    root /var/www/mail;
+
+    index index.html 
+}

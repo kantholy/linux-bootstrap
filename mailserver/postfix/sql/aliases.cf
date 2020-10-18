@@ -1,0 +1,8 @@
+user = vmail
+password = vmaildbpass
+hosts = unix:/run/mysqld/mysqld.sock
+dbname = vmail
+query = SELECT DISTINCT concat(destination_username, '@', destination_domain) AS destinations FROM aliases
+        WHERE (source_username = '%u' OR source_username IS NULL) AND source_domain = '%d'
+        AND enabled = true
+        AND NOT EXISTS (SELECT id FROM accounts WHERE username = '%u' and domain = '%d');

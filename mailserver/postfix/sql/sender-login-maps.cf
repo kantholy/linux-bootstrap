@@ -1,0 +1,7 @@
+user = vmail
+password = vmaildbpass
+hosts = unix:/run/mysqld/mysqld.sock
+dbname = vmail
+query = select concat(username, '@', domain) as 'owns' from accounts where username = '%u' AND domain = '%d' and enabled = true union select 
+        concat(destination_username, '@', destination_domain) AS 'owns' from aliases 
+        where source_username = '%u' and source_domain = '%d' and enabled = true;
