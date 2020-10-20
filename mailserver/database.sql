@@ -43,3 +43,11 @@ CREATE TABLE `tlspolicies` (
     PRIMARY KEY (`id`),
     UNIQUE KEY (`domain`)
 );
+
+CREATE TABLE `quota` (
+    `username` VARCHAR(100) NOT NULL COLLATE 'utf8_general_ci',
+    `bytes` BIGINT(20) NOT NULL DEFAULT '0',
+    `messages` INT(11) NOT NULL DEFAULT '0',
+    `updated_at` TIMESTAMP NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+    PRIMARY KEY (`username`) USING BTREE
+);
