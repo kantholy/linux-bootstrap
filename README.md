@@ -97,6 +97,17 @@ Custom NTP Server:
 
 * add `NTP=ntp.contoso.com` into the `[Time]` section
 
+## SSH stuff
+```bash
+# proper SSH permissions
+chmod g-w ~
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
+# generate new key
+ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "$USER@$HOSTNAME"
+```
+
 ## Setup Web Stack
 ```bash
 # essentials
