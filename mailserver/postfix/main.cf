@@ -59,7 +59,7 @@ virtual_transport = lmtp:unix:private/dovecot-lmtp
 ## Spamfilter und DKIM-Signaturen via Rspamd
 ##
 
-smtpd_milters = inet:localhost:11332
+smtpd_milters = inet:localhost:11332,inet:localhost:7357
 non_smtpd_milters = inet:localhost:11332
 milter_protocol = 6
 milter_mail_macros =  i {mail_addr} {client_addr} {client_name} {auth_authen}
@@ -147,3 +147,6 @@ recipient_delimiter = +
 
 ### Keine Rückschlüsse auf benutzte Mailadressen zulassen
 disable_vrfy_command = yes
+
+### Mailbetreff mitloggen
+header_checks = regexp:/etc/postfix/header_checks

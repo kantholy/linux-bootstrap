@@ -240,6 +240,12 @@ cat /var/lib/rspamd/dkim/2020.txt
 cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 
 
+log "installing clamav-milter"
+apt -yq install clamav-milter
+cd /etc/clamav/
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/clamav/clamav-milter.cf
+
+
 # :: setup initial domain and user ::
 
 mysql -e "insert into vmail.domains (domain) values ('$domain');"
