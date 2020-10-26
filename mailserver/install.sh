@@ -177,6 +177,7 @@ rm master.cf main.cf.proto master.cf.proto
 
 wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/main.cf
 wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/master.cf
+wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/header_checks
 wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/submission_header_cleanup
 
 openssl dhparam -out /etc/postfix/dh2048.pem 2048
