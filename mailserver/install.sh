@@ -241,9 +241,13 @@ cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 
 
 log "installing clamav-milter"
-apt -yq install clamav-milter
+apt -yq install clamav-milter clamav-daemon
 cd /etc/clamav/
 wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/clamav/clamav-milter.cf
+
+systemctl enable clamav-daemon
+service clamav-daemon start
+service clamav-milter start
 
 
 # :: setup initial domain and user ::
