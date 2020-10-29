@@ -53,12 +53,12 @@ pause 'Press [Enter] key to continue...'
 hostnamectl set-hostname --static $hostname
 echo $hostname > /etc/mailname
 
-apt -yq update
-apt -yq upgrade
+apt -qq update
+apt -qq upgrade
 
 # -----------------------------------------------------------------------------
 log "installing unbound..."
-apt -yq install unbound resolvconf
+apt -qq install resolvconf
 
 
 echo "nameserver 127.0.0.1" >> /etc/resolv.conf
@@ -67,12 +67,12 @@ echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 # https://thomas-leister.de/mailserver-debian-buster/#erstkonfiguration-nginx-webserver
 
 log "installing nginx..."
-apt -yq install nginx wget
+apt -qq install nginx wget
 
-mkdir /var/www/mail && cd $_
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/mail/index.html
-mkdir mail && cd $_
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/mail/mail/config-v1.1.xml
+mkdir /var/www/mail
+cd /var/www/mail
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/nginx/mail/index.html
+
 
 
 cd /etc/nginx/sites-available/
@@ -92,13 +92,13 @@ service nginx reload
 
 log "installing acme.sh..."
 cd ~
-apt -yq install curl
+apt -qq install curl
 curl https://get.acme.sh | sh
 source ~/.profile
 
 
 log "configuring SSL certificates using acme.sh..."
-acme.sh --issue --nginx -d mail.$domain -d imap.$domain -d smtp.$domain -d autoconfig.$domain
+acme.sh --issue --nginx -d mail.$domain
 
 mkdir -p /etc/acme.sh/mail.$domain
 
@@ -108,14 +108,14 @@ acme.sh --install-cert -d mail.$domain \
     --fullchain-file /etc/acme.sh/mail.$domain/fullchain.pem \
     --reloadcmd     "systemctl reload nginx; systemctl restart dovecot; systemctl restart postfix;"
 
- acme.sh --install-cronjob
+acme.sh --install-cronjob
 
 
 # -----------------------------------------------------------------------------
 # https://thomas-leister.de/mailserver-debian-buster/#mysql-datenbank-einrichten
 
 log "installing MariaDB"
-apt -yq install mariadb-server
+apt -qq install mariadb-server
 
 wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/database.sql
 mysql < database.sql
@@ -129,7 +129,6 @@ mysql -e "grant select on vmail.* to 'vmail'@'localhost' identified by '$vmail_p
 log "setting up vmail..."
 useradd --create-home --home-dir /var/vmail --user-group --shell /usr/sbin/nologin vmail
 
-mkdir /var/vmail/mailboxes
 mkdir -p /var/vmail/sieve/global
 chown -R vmail /var/vmail
 chgrp -R vmail /var/vmail
@@ -139,15 +138,22 @@ chmod -R 770 /var/vmail
 # https://thomas-leister.de/mailserver-debian-buster/#dovecot-installieren-und-konfigurieren
 
 log "installing dovecot..."
-apt -yq install dovecot-core dovecot-imapd dovecot-lmtpd dovecot-mysql dovecot-sieve dovecot-managesieved
+
+apt -qq install curl apt-transport-https
+
+curl https://repo.dovecot.org/DOVECOT-REPO-GPG | gpg --import
+gpg --export ED409DA1 > /etc/apt/trusted.gpg.d/dovecot.gpg
+echo deb https://repo.dovecot.org/ce-2.3-latest/ubuntu/bionic bionic main > /etc/apt/sources.list.d/dovecot.list
+
+apt -qq install dovecot-core dovecot-imapd dovecot-lmtpd dovecot-mysql dovecot-sieve dovecot-managesieved
 
 systemctl stop dovecot
 
 rm -r /etc/dovecot/*
 cd /etc/dovecot
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot.conf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot-sql.conf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot.conf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/dovecot-sql.conf
 
 sed -i "s/domain.tld/$domain/g" dovecot.conf
 
@@ -155,9 +161,9 @@ chmod 440 dovecot-sql.conf
 
 cd /var/vmail/sieve/global
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-ham.sieve
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-spam.sieve
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/spam-global.sieve
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-ham.sieve
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/learn-spam.sieve
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/dovecot/sieve/global/spam-global.sieve
 
 
 log "generating Diffie-Hellmann Parameter - this could take a while!"
@@ -167,7 +173,7 @@ openssl dhparam -out /etc/dovecot/dh4096.pem 4096
 # https://thomas-leister.de/mailserver-debian-buster/#postfix-installieren-und-konfigurieren
 
 log "installing postfix..."
-apt -yq install postfix postfix-mysql
+apt -qq install postfix postfix-mysql
 systemctl stop postfix
 
 cd /etc/postfix
@@ -175,10 +181,10 @@ rm -r sasl
 mv main.cf main.cf.bak
 rm master.cf main.cf.proto master.cf.proto
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/main.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/master.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/header_checks
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/submission_header_cleanup
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/main.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/master.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/header_checks
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/submission_header_cleanup
 
 openssl dhparam -out /etc/postfix/dh2048.pem 2048
 
@@ -187,12 +193,12 @@ sed -i "s/domain.tld/$domain/g" main.cf
 mkdir /etc/postfix/sql
 cd /etc/postfix/sql
 
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/accounts.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/aliases.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/domains.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/recipient-access.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/sender-login-maps.cf
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/tls-policy.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/accounts.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/aliases.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/domains.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/recipient-access.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/sender-login-maps.cf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/postfix/sql/tls-policy.cf
 
 chown -R root:postfix /etc/postfix/sql
 chmod g+x /etc/postfix/sql
@@ -211,18 +217,18 @@ newaliases
 
 log "installing rpamd..."
 
-apt -yq install lsb-release wget gnupg2
+apt -qq install lsb-release wget gnupg2
 
-apt-get install -y lsb-release wget # optional
+apt-get install -qq lsb-release # optional
 CODENAME=`lsb_release -c -s`
 wget -O- https://rspamd.com/apt-stable/gpg.key | apt-key add -
 echo "deb [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" > /etc/apt/sources.list.d/rspamd.list
 echo "deb-src [arch=amd64] http://rspamd.com/apt-stable/ $CODENAME main" >> /etc/apt/sources.list.d/rspamd.list
 apt-get update
-apt-get -yq --no-install-recommends install rspamd
+apt-get -qq --no-install-recommends install rspamd
 
 
-apt -yq install redis-server
+apt -qq install redis-server
 systemctl stop rspamd
 
 touch /etc/rspamd/local.d/whitelist_ip.map
@@ -242,9 +248,10 @@ cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 
 
 log "installing clamav-milter"
-apt -yq install clamav-milter clamav-daemon
+apt -qq install clamav-milter clamav-daemon
 cd /etc/clamav/
-wget https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/clamav/clamav-milter.cf
+rm clamav-milter.conf
+wget -q https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/clamav/clamav-milter.cf
 
 systemctl enable clamav-daemon
 service clamav-daemon start
