@@ -11,19 +11,30 @@ fi
 cd /root
 
 # check if endlessh is installed
-apt-cache show endlessh > /dev/null
-if [ $? -ne 0 ]; then
-    wget http://de.archive.ubuntu.com/ubuntu/pool/universe/e/endlessh/endlessh_1.1-2_amd64.deb
-    apt -y install /root/endlessh_1.1-2_amd64.deb
+if [[ -f /usr/local/bin/endlessh ]]; then
+    wget -q -O endlessh.tar.gz https://salsa.debian.org/debian/endlessh/-/archive/debian/sid/endlessh-debian-sid.tar.gz
+    tar -xf endlessh.tar.gz
+
+    apt -y build-essential
+    cd endlessh-debian-sid/
+    make
+    make install
 fi
 
 # doublecheck, otherwise exit!
-apt-cache show endlessh > /dev/null
-if [ $? -ne 0 ]; then
+if [[ -f /usr/local/bin/endlessh ]]; then
     echo "ERROR: UNABLE TO INSTALL endlessh"
     exit
 fi
 
+# install service file
+wget -q -O /etc/systemd/system/endlessh.service https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/endlessh/endlessh.service
+
+# make sure endlessh can run on ports lt 1024
+setcap 'cap_net_bind_service=+ep' /usr/bin/endlessh
+sed -i "s/#AmbientCapabilities/AmbientCapabilities/" /lib/systemd/system/endlessh.service
+sed -i "s/PrivateUsers=/#PrivateUsers=/" /lib/systemd/system/endlessh.service
+systemctl daemon-reload
 
 # stop endlessh after installing
 service endlessh stop
@@ -53,12 +64,6 @@ if [[ -f /etc/endlessh/config ]]; then
     echo "BindFamily 0" >> /etc/endlessh/config
 fi
 
-# make sure endlessh can run on ports lt 1024
-
-setcap 'cap_net_bind_service=+ep' /usr/bin/endlessh
-sed -i "s/#AmbientCapabilities/AmbientCapabilities/" /lib/systemd/system/endlessh.service
-sed -i "s/PrivateUsers=/#PrivateUsers=/" /lib/systemd/system/endlessh.service
-systemctl daemon-reload
 
 # restart all the things!
 service ssh stop && service endlessh start && service ssh start
