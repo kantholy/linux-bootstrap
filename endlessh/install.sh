@@ -31,10 +31,11 @@ fi
 wget -q -O /etc/systemd/system/endlessh.service https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/endlessh/endlessh.service
 
 # make sure endlessh can run on ports lt 1024
-setcap 'cap_net_bind_service=+ep' /usr/bin/endlessh
-sed -i "s/#AmbientCapabilities/AmbientCapabilities/" /lib/systemd/system/endlessh.service
-sed -i "s/PrivateUsers=/#PrivateUsers=/" /lib/systemd/system/endlessh.service
+setcap 'cap_net_bind_service=+ep' /usr/local/bin/endlessh
+#sed -i "s/#AmbientCapabilities/AmbientCapabilities/" /lib/systemd/system/endlessh.service
+#sed -i "s/PrivateUsers=/#PrivateUsers=/" /lib/systemd/system/endlessh.service
 systemctl daemon-reload
+systemctl enable endlessh
 
 # stop endlessh after installing
 service endlessh stop
@@ -61,7 +62,7 @@ if [[ -f /etc/endlessh/config ]]; then
     echo "MaxLineLength 32" >> /etc/endlessh/config
     echo "MaxClients 4096" >> /etc/endlessh/config
     echo "LogLevel 1" >> /etc/endlessh/config
-    echo "BindFamily 0" >> /etc/endlessh/config
+    echo "BindFamily 4" >> /etc/endlessh/config
 fi
 
 
