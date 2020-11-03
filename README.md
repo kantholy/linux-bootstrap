@@ -18,6 +18,24 @@ echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
 
 # Ubuntu 18.04 add universe
 sudo add-apt-repository universe
+
+
+# install logwatch
+sudo apt -yq install logwatch
+
+echo '# make sure you set a valid MailTo
+MailTo = 
+MailFrom = root@localhost
+Range = yesterday
+Detail = Med
+# less noise
+Service = "-pam_unix"
+Service = "-saslauthd"
+Service = "-rsyslogd"' | sudo tee /etc/logwatch/conf/logwatch.conf
+
+sudo sed -i "s/root@localhost/root@$HOSTNAME/" /etc/logwatch/conf/logwatch.conf
+
+sudo nano /etc/logwatch/conf/logwatch.conf
 ```
 
 
