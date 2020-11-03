@@ -11,7 +11,7 @@ fi
 cd /root
 
 # check if endlessh is installed
-if [[ -f /usr/local/bin/endlessh ]]; then
+if [ -f /usr/local/bin/endlessh ]; then
     wget -q -O endlessh.tar.gz https://salsa.debian.org/debian/endlessh/-/archive/debian/sid/endlessh-debian-sid.tar.gz
     tar -xf endlessh.tar.gz
 
@@ -22,7 +22,7 @@ if [[ -f /usr/local/bin/endlessh ]]; then
 fi
 
 # doublecheck, otherwise exit!
-if [[ -f /usr/local/bin/endlessh ]]; then
+if [ -f /usr/local/bin/endlessh ]; then
     echo "ERROR: UNABLE TO INSTALL endlessh"
     exit
 fi
