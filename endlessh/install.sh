@@ -15,7 +15,7 @@ if [ ! -f /usr/local/bin/endlessh ]; then
     wget -q -O endlessh.tar.gz https://salsa.debian.org/debian/endlessh/-/archive/debian/sid/endlessh-debian-sid.tar.gz
     tar -xf endlessh.tar.gz
 
-    apt -y build-essential
+    apt -y install build-essential
     cd endlessh-debian-sid/
     make
     make install
@@ -56,7 +56,7 @@ mkdir -p /etc/endlessh
 
 wget -q -O /etc/endlessh/config https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/endlessh/config
 
-if [[ -f /etc/endlessh/config ]]; then
+if [ ! -f /etc/endlessh/config ]; then
     echo "Port 22" > /etc/endlessh/config
     echo "Delay 10000" >> /etc/endlessh/config
     echo "MaxLineLength 32" >> /etc/endlessh/config
@@ -69,6 +69,8 @@ fi
 # restart all the things!
 service ssh stop && service endlessh start && service ssh start
 
+echo "----------"
+echo "Make sure both SSH + ENDLESSH is running on designated Ports (22 + $SSH_PORT)"
+echo ""
 
-service endlessh status
-service ssh status
+netstat -tulpn
