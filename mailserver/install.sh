@@ -244,8 +244,21 @@ chmod 440 /var/lib/rspamd/dkim/*
 
 cat /var/lib/rspamd/dkim/2020.txt
 
-cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
+cd /etc/rspamd/local.d/
 
+wget -q -O classifier-bayes.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/classifier-bayes.conf
+wget -q -O dkim_signing.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/dkim_signing.conf
+wget -q -O logging.inc https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/logging.inc
+wget -q -O milter_headers.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/milter_headers.conf
+wget -q -O multimap.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/multimap.conf
+wget -q -O redis.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/local.d/redis.conf
+
+cd /etc/rspamd/override.d/
+
+wget -q -O classifier-bayes.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/mailserver/rspamd/override.d/classifier-bayes.conf
+
+
+cp -R /etc/rspamd/local.d/dkim_signing.conf /etc/rspamd/local.d/arc.conf
 
 log "installing clamav-milter"
 apt -qq install clamav-milter clamav-daemon
