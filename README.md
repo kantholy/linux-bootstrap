@@ -38,6 +38,40 @@ sudo sed -i "s/root@localhost/root@$HOSTNAME/" /etc/logwatch/conf/logwatch.conf
 sudo nano /etc/logwatch/conf/logwatch.conf
 ```
 
+## ufw
+```bash
+# based on https://www.linode.com/docs/guides/configure-firewall-with-ufw/
+sudo apt-get -y install ufw
+sudo sed -i 's/IPV6=no/IPV6=yes/g' /etc/default/ufw
+# allow SSH (adjust the port if needed!)
+sudo ufw allow 22/tcp
+
+# allow HTTP + HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# default rules
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw logging low
+
+# enable ufw
+sudo ufw disable
+sudo ufw enable
+
+
+# to check if ufw is setup properly:
+sudo iptables -L -n
+
+# to see if ufw is blocking something:
+sudo dmesg
+
+# make sure rsyslog is receiving the ufw stuff:
+sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
+# restart all the things
+service rsyslog restart
+```
+
 
 ## Ubuntu 18.04 MAC DHCP Reservation:
 
