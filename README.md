@@ -7,6 +7,11 @@ useful stuff:
 # force color prompt
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' ~/.bashrc
 
+echo "# quick folder view: list folders + files, human readable!" | tee -a ~/.bashrc
+echo "alias l='ls -lh --group-directories-first'" | tee -a ~/.bashrc
+
+source ~/.bashrc
+
 # copy .bashrc to root
 sudo cp ~/.bashrc /root/.bashrc
 # red prompt for root user
@@ -18,6 +23,35 @@ echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
 
 # Ubuntu 18.04 add universe
 sudo add-apt-repository universe
+
+
+# proper SSH permissions
+chmod g-w ~
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+
+# generate SSH KEY
+ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "$USER@$HOSTNAME"
+printf "\nthis is your SSH public key:\n\n" && cat ~/.ssh/id_ed25519.pub && echo ""
+
+# clean and secure SSH config:
+sudo wget -q -O /etc/ssh/banner https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/ssh/banner
+sudo wget -q -O /etc/ssh/sshd_config https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/ssh/sshd_config
+
+# ############################################################################
+#
+# -- optional settings !! READ BEFORE YOU ACT !!
+# 
+# to move the SSH Port away from default:
+sudo sed -i 's/Port 22/Port 2222/' /etc/ssh/sshd_config
+#
+# to allow only the current user to connect via SSH
+sudo sed -i "s/#AllowUsers username/AllowUsers $USER/" /etc/ssh/sshd_config
+#
+# to allow root login:
+sudo sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
+#
+# ############################################################################
 
 
 # install logwatch
