@@ -102,16 +102,16 @@ dbpurgeage = 7d
 # (optional) enable fail2ban honeypot
 
 cd /etc/fail2ban/action.d/
-wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/action.d/iptables-honeypot.conf
+sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/action.d/iptables-honeypot.conf
 cd /etc/fail2ban/filter.d/
-wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
+sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
 cd /etc/fail2ban/jail.d/
-wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/jail.d/iptables-honeypot.conf
+sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/jail.d/iptables-honeypot.conf
 # make sure rsyslog is receiving the iptables messages:
 sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
-service rsyslog restart
+sudo service rsyslog restart
 
-service fail2ban restart
+sudo service fail2ban restart
 
 ```
 
