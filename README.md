@@ -99,17 +99,25 @@ dbpurgeage = 7d
 # SSH jail is enabled by default on debian based systems
 # based on /etc/fail2ban/jail.d/defaults-debian.conf
 
-# (optional) enable fail2ban honeypot
 
+# (optional)enable ufw fail2ban blocking:
+cd /etc/fail2ban/filter.d/
+sudo wget -q -O ufw-probe.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/ufw-probe.conf
+cd /etc/fail2ban/jail.d/
+sudo wget -q -O ufw-probe.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/jail.d/ufw-probe.conf
+
+sudo service fail2ban restart
+
+
+# -- DEPRECATED/BUGGY -- 
+# [must be fixed first]
+# (optional) enable fail2ban honeypot
 cd /etc/fail2ban/action.d/
 sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/action.d/iptables-honeypot.conf
 cd /etc/fail2ban/filter.d/
 sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
 cd /etc/fail2ban/jail.d/
 sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/jail.d/iptables-honeypot.conf
-# make sure rsyslog is receiving the iptables messages:
-sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
-sudo service rsyslog restart
 
 sudo service fail2ban restart
 
