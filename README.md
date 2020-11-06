@@ -107,6 +107,24 @@ service rsyslog restart
 ```
 
 
+## Setup Time
+```bash
+sudo timedatectl set-ntp 1
+sudo timedatectl set-timezone Europe/Berlin
+
+# custom NTP server:
+echo "[Time]
+NTP=pool.ntp.org time.google.com time.cloudflare.com
+FallbackNTP=ntp.ubuntu.com
+#RootDistanceMaxSec=5
+#PollIntervalMinSec=32
+#PollIntervalMaxSec=2048
+" | sudo tee /etc/systemd/timesyncd.conf
+
+sudo systemctl restart systemd-timesyncd
+```
+
+
 ## Ubuntu 18.04 MAC DHCP Reservation:
 
 add `dhcp-identifier: mac` after `dhcp4` in `/etc/netplan/xxx.yaml (cloud-init)`
@@ -172,27 +190,6 @@ sudo apt-get install snmpd
 * set `rocommunity public 10.0.0.0` (public = user, 10.0.0.0 = snmpd poller ip)
 * set `sysLocation` and `sysContact`
 
-## Setup Time
-```bash
-sudo timedatectl set-ntp 1
-sudo timedatectl set-timezone Europe/Berlin
-sudo systemctl restart systemd-timesyncd
-```
-Custom NTP Server:
-`vim /etc/systemd/timesyncd.conf`
-
-* add `NTP=ntp.contoso.com` into the `[Time]` section
-
-## SSH stuff
-```bash
-# proper SSH permissions
-chmod g-w ~
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
-
-# generate new key
-ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "$USER@$HOSTNAME"
-```
 
 ## Setup Web Stack
 ```bash
