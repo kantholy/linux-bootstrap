@@ -1,0 +1,44 @@
+#######
+### OpenSSH Configuration
+#######
+
+### Connection settings
+
+Port 22
+
+#AddressFamily any
+ListenAddress 0.0.0.0
+#ListenAddress ::
+
+TCPKeepAlive no
+ClientAliveInterval 60
+ClientAliveCountMax 30
+Protocol 2
+
+### Authentication settings
+#HostKey /etc/ssh/ed25519.key
+#HostKey /etc/ssh/RSA4096.key
+#PasswordAuthentication no
+PasswordAuthentication yes
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+UsePAM yes
+AuthorizedKeysFile .ssh/authorized_keys
+
+### Login settings
+LoginGraceTime 1M
+MaxAuthTries 3
+MaxSessions 5
+PermitRootLogin no
+# note: 'AllowUsers' overrides 'PermitRootLogin' so list root here
+# if you want root to have access!
+#AllowUsers username
+
+### Program settings
+Banner /etc/ssh/banner
+LogLevel VERBOSE
+X11Forwarding yes
+PrintMotd no
+PrintLastLog yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
