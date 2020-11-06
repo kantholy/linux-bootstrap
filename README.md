@@ -72,6 +72,49 @@ sudo sed -i "s/root@localhost/root@$HOSTNAME/" /etc/logwatch/conf/logwatch.conf
 sudo nano /etc/logwatch/conf/logwatch.conf
 ```
 
+
+## fail2ban
+```bash
+sudo apt -y install fail2ban
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# harden fail2ban
+sudo sed -i 's/bantime  = 10m/bantime  = 1h/' /etc/fail2ban/jail.local
+sudo sed -i 's/findtime  = 10m/findtime  = 30m/' /etc/fail2ban/jail.local
+sudo sed -i 's/maxretry = 5/maxretry = 3/' /etc/fail2ban/jail.local
+
+echo "[Definition]
+# This file overrides the default settings in /etc/fail2ban/fail2ban.conf
+# Customizations should be written here so that updates do NOT overwrite them!
+
+### Set logging options
+## verbosity -- options: CRITICAL, ERROR (default), WARNING, NOTICE, INFO, DEBUG
+loglevel = INFO
+logtarget = /var/log/fail2ban.log
+
+### Amount of time (in seconds) before HISTORY of bans are cleared.
+dbpurgeage = 7d
+" | sudo tee /etc/fail2ban/fail2ban.local
+
+# SSH jail is enabled by default on debian based systems
+# based on /etc/fail2ban/jail.d/defaults-debian.conf
+
+# (optional) enable fail2ban honeypot
+
+cd /etc/fail2ban/action.d/
+wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/action.d/iptables-honeypot.conf
+cd /etc/fail2ban/filter.d/
+wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
+cd /etc/fail2ban/jail.d/
+wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
+# make sure rsyslog is receiving the iptables messages:
+sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
+service rsyslog restart
+
+service fail2ban restart
+
+```
+
 ## ufw
 ```bash
 # based on https://www.linode.com/docs/guides/configure-firewall-with-ufw/
@@ -80,9 +123,22 @@ sudo sed -i 's/IPV6=no/IPV6=yes/g' /etc/default/ufw
 # allow SSH (adjust the port if needed!)
 sudo ufw allow 22/tcp
 
-# allow HTTP + HTTPS
+# (optional) allow HTTP + HTTPS
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
+
+# (optional) allow FTP
+sudo ufw allow 21/tcp
+# (optional) allow SMTP
+sudo ufw allow 25/tcp
+sudo ufw allow 587/tcp
+# (optional) allow IMAP + IMAPS
+sudo ufw allow 143/tcp
+sudo ufw allow 993/tcp
+
+# (optional) allow POP3 (not recommended - use IMAP!)
+#sudo ufw allow 110/tcp
+#sudo ufw allow 995/tcp
 
 # default rules
 sudo ufw default deny incoming
@@ -104,6 +160,22 @@ sudo dmesg
 sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
 # restart all the things
 service rsyslog restart
+
+
+### do delete some rules:
+# 1. show numbered:
+sudo ufw status numbered
+# 2. pick and remove numbered rule
+sudo ufw delete %NUMBER%
+# 3. as the numbering changes, make sure you show the status numbered again
+# !! before!! you delete more rules!
+# - you have been warned!
+
+#
+# reset UFW in case something bad happend to your configuration
+#
+sudo ufw disable
+sudo ufw reset
 ```
 
 
