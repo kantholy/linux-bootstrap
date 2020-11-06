@@ -106,7 +106,7 @@ wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/lin
 cd /etc/fail2ban/filter.d/
 wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
 cd /etc/fail2ban/jail.d/
-wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/filter.d/iptables-honeypot.conf
+wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/fail2ban/jail.d/iptables-honeypot.conf
 # make sure rsyslog is receiving the iptables messages:
 sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
 service rsyslog restart
