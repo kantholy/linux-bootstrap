@@ -40,6 +40,10 @@ ufw allow teamspeak
 
 # first start: 
 /opt/ts3/ts3server_minimal_runscript.sh
+
+#
+# MAKE SURE YOU NOTE THE ADMIN ACCOUNT + PW on first start!
+#
 ```
 
 ## Start
