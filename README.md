@@ -160,14 +160,14 @@ sudo ufw enable
 
 # to check if ufw is setup properly:
 sudo iptables -L -n
-
 # to see if ufw is blocking something:
 sudo dmesg
-
 # make sure rsyslog is receiving the ufw stuff:
 sudo sed -i 's/#module(load="imklog"/module(load="imklog"/' /etc/rsyslog.conf
+# prevent spam to syslog
+sudo sed -i 's/#& stop/\& stop/' /etc/rsyslog.d/20-ufw.conf
 # restart all the things
-service rsyslog restart
+sudo service rsyslog restart
 
 
 ### do delete some rules:
