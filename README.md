@@ -109,6 +109,19 @@ sudo wget -q -O ufw-probe.conf https://raw.githubusercontent.com/kantholy/linux-
 sudo service fail2ban restart
 
 
+# --fail2ban-status
+# convenient function to get the status of all fail2ban jails
+echo '
+
+function fail2ban-status() {
+  JAILS=($(fail2ban-client status | grep "Jail list" | sed -E "s/^[^:]+:[ \t]+//" | sed "s/,//g"))
+  for JAIL in ${JAILS[@]}
+  do
+    fail2ban-client status $JAIL
+  done
+}' | sudo tee -a /root/.bashrc
+
+
 # -- DEPRECATED/BUGGY -- 
 # [must be fixed first]
 # (optional) enable fail2ban honeypot
