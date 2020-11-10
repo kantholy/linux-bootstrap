@@ -231,11 +231,23 @@ network:
             dhcp-identifier: mac
 ```
 
-## Disable ipv6
+## Setup bind9 DNS
 ```bash
-sudo echo net.ipv6.conf.all.disable_ipv6 = 1 > /etc/sysctl.d/20-disable-ipv6.conf
-sudo echo net.ipv6.conf.default.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
-sudo echo net.ipv6.conf.lo.disable_ipv6 = 1 >> /etc/sysctl.d/20-disable-ipv6.conf
+# install bind9
+sudo apt -y install bind9
+
+pushd /etc/resolvconf/resolv.conf.d
+sudo cp base base.bak
+echo 'nameserver 127.0.0.1' | sudo tee base
+sudo resolvconf -u
+popd
+```
+
+## Disable IPv6
+```bash
+echo 'net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1' | tee /etc/sysctl.d/20-disable-ipv6.conf
 
 # reload the values
 sudo sysctl --system
