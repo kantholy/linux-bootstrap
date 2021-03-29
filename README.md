@@ -34,6 +34,9 @@ chmod 600 ~/.ssh/authorized_keys
 ssh-keygen -o -a 100 -t ed25519 -f ~/.ssh/id_ed25519 -C "$USER@$HOSTNAME"
 printf "\nthis is your SSH public key:\n\n" && cat ~/.ssh/id_ed25519.pub && echo ""
 
+# Issue File
+echo "\S{PRETTY_NAME} - Name: \n - IP: \4{eth0}" | sudo tee /etc/issue
+
 # clean and secure SSH config:
 sudo wget -q -O /etc/ssh/banner https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/ssh/banner
 sudo wget -q -O /etc/ssh/sshd_config https://raw.githubusercontent.com/kantholy/linux-bootstrap/master/etc/ssh/sshd_config
