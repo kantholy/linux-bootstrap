@@ -1,7 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 #   20-updates - create the system updates section of the MOTD
 #   Copyright (c) 2013 Nick Charlton
+#   updated 2021-12-06 to python3 - Tobias Duethorn <tobias@duethorn.cc>
 #
 #   Authors: Nick Charlton <hello@nickcharlton.net>
 #   Based upon prior work by Dustin Kirkland and Michael Vogt.
@@ -53,7 +54,7 @@ apt_pkg.init()
 # open the apt cache
 try:
     cache = apt_pkg.Cache(OpNullProgress())
-except SystemError, e:
+except SystemError as e:
     sys.stderr.write("Error: Opening the cache (%s)" % e)
     sys.exit(-1)
 
@@ -81,7 +82,7 @@ try:
 
     # then a standard upgrade
     depcache.upgrade()
-except SystemError, e:
+except SystemError as e:
     sys.stderr.write("Error: Couldn't mark the upgrade (%s)" % e)
     sys.exit(-1)
 
@@ -111,6 +112,6 @@ for pkg in cache.packages:
             security_upgrades += 1
             break
 
-print "%d updates to install." % upgrades
-print "%d are security updates." % security_upgrades
-print "" # leave a trailing blank line
+print ("%d updates to install." % upgrades)
+print ("%d are security updates." % security_upgrades)
+print ("") # leave a trailing blank line
