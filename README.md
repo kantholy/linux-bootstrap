@@ -2,7 +2,7 @@
 
 * this set of scripts is for debian/ubuntu based machines...
 
-useful stuff:
+## bash
 ```bash
 # force color prompt
 sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' ~/.bashrc
@@ -17,14 +17,13 @@ sudo cp ~/.bashrc /root/.bashrc
 # red prompt for root user
 sudo sed -i 's/;32m/;31m/g' /root/.bashrc
 
-
 # sudo without password
 echo "$USER ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+```
 
-# Ubuntu 18.04 add universe
-sudo add-apt-repository universe
+## SSH
 
-
+```bash
 # proper SSH permissions
 chmod g-w ~
 chmod 700 ~/.ssh
@@ -57,6 +56,11 @@ sudo sed -i 's/PermitRootLogin no/PermitRootLogin yes/' /etc/ssh/sshd_config
 # ############################################################################
 
 
+```
+
+## logwatch
+
+```bash
 # install logwatch
 sudo apt -yq install logwatch
 
@@ -137,6 +141,24 @@ sudo wget -q -O iptables-honeypot.conf https://raw.githubusercontent.com/kanthol
 
 sudo service fail2ban restart
 
+```
+
+## Docker
+
+```bash
+# remove old versions
+sudo apt-get remove docker docker-engine docker.io containerd runc
+
+# setup docker APT repo
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+# Docker PGP
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+# add docker stable Repo
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# install
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 ```
 
 ## ufw
@@ -221,7 +243,7 @@ sudo systemctl restart systemd-timesyncd
 ```
 
 
-## Ubuntu 18.04 MAC DHCP Reservation:
+## Ubuntu MAC DHCP Reservation:
 
 add `dhcp-identifier: mac` after `dhcp4` in `/etc/netplan/xxx.yaml (cloud-init)`
 ```
