@@ -165,7 +165,7 @@ sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 
 # install lazydocker - MUST BE RUN AS ROOT!
-DIR="/usr/local/bin"
+export DIR="/usr/local/bin"
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
 ```
 
