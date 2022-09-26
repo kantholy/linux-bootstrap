@@ -343,6 +343,10 @@ sudo add-apt-repository ppa:ondrej/php
 sudo apt update
 sudo apt install -y php7.4-cli php7.4-fpm php7.4-zip php7.4-mbstring php7.4-xml php7.4-curl php7.4-mysql
 
+# PHP8
+sudo apt install -y php8.1
+sudo apt install -y php8.1-{mysql,cli,common,imap,ldap,xml,fpm,curl,mbstring,zip}
+
 # php settings:
 sudo sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 256M/g' /etc/php/7.4/fpm/php.ini
 sudo service php7.4-fpm restart >/dev/null
