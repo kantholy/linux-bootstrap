@@ -29,7 +29,7 @@ apt list '?narrow(?installed, ?not(?origin(Debian)))'
 
 sudo apt update
 sudo apt upgrade
-sudo full-upgrade
+sudo apt full-upgrade
 sudo apt --purge autoremove
 
 # reboot when done!
@@ -126,7 +126,7 @@ apt list '?narrow(?installed, ?not(?origin(Debian)))'
 
 sudo apt update
 sudo apt upgrade
-sudo full-upgrade
+sudo apt full-upgrade
 sudo apt --purge autoremove
 
 # reboot when done!
