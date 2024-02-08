@@ -55,3 +55,19 @@ Match Group sftponly
 sudo systemctl restart ssh
 
 ```
+
+
+## add jailed SFTP user
+
+```bash
+# make sure you are logged in as root!
+
+
+read -p "Please input the user name: " input_username
+# convert to lowercase
+username=$(echo "$input_username" | tr '[:upper:]' '[:lower:]')
+# add user: create homedir, disable SSH login and add to sftponly group
+sudo useradd -m -d "/home/$username" -s /bin/false -G sftponly "$username"
+
+
+```
